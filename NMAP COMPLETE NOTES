@@ -1,0 +1,291 @@
+Nmap Tool Tryhackme Labs 
+Overview about NMAP - It's a very powerful tool used for scanning web network and machines to check for the open ports and exploit them.
+
+NMAP uses three types of scanning protocols or methods (Whatever)-
+ARP - This method uses ARP requests for discovering Live Hosts...
+ICMP - This method uses ICMP requests for finding live hosts.... 		( WE'LL DISCUSS LATER WHAT ARE THESE ALL METHODS )
+TCP/UDP - This method uses TCP/UDP packets for finding live hosts....
+
+								\/\/\/\/\/\/\/\/	Structure of a NMAP Scan 	\/\/\/\/\/\/\/
+
+													1. Enumerate Targets 
+													2. Discover Live Hosts
+													3. Reverse-DNS lookup
+													4. Detect OS
+													5. Detect Versions
+													6. Find Open Ports
+													7. Traceroutes
+													8. Default Scripts
+													9. Writes Output ( OPTIONAL )
+
+Two Must Scanner That is related with NMAP scans
+
+Some Useful Flags For NMAP 
+-sL - It will show the detailed information about the scan targets
+-n - It will skip Dns Resolving ( for example If u will type an ip Address 192.168.0.0 it will not convert it to any domain )
+-sn - if u want nmap to scan for live hosts without scanning for ports then use this Flag.
+-sn -PR	- only to perform an ARP scan without port-scanning
+-PR - To perform an ARP scan.
+
+
+ARP SCANS 
+How does ARP scans work?
+
+At first, the pc1 sends a ARP request to the other pc and then pc2 sends an ARP response in return;
+which indicates that the host is live or up
+ 
+ 
+ICMP SCANS 
+ 
+How does ICMP scans work?
+ 
+pc1 sends a ICMP request and pc2 replies it with a ICMP reply which indicates that the host is live or up.
+ 
+COMMANDS 
+-PE - To use ICMP echo request to discover live hosts, add the option -PE. 
+												(Remember to add -sn if you don’t want to follow that with a port scan.)
+-PP - For sending timestamps request to the network 
+-PM - uses ICMP address mask in scanning			
+
+
+TCP/SYN SCANS
+How does TCP SYN work?
+
+We can send a packet with the SYN (Synchronize) flag set to a TCP port, 80 by default, and wait for a response.
+An open port should reply with a SYN/ACK (Acknowledge); a closed port would result in an RST (Reset). 
+
+
+
+
+
+								\/\/\/\/\/\/\/\/\/\/\/	ALL SCANS COMMANDS	/\/\/\/\/\//\/\/\/\/\/\/\/					
+
+										ARP Scan 	sudo nmap -PR -sn MACHINE_IP/24
+										ICMP Echo Scan 	sudo nmap -PE -sn MACHINE_IP/24
+										ICMP Timestamp Scan 	sudo nmap -PP -sn MACHINE_IP/24
+										ICMP Address Mask Scan 	sudo nmap -PM -sn MACHINE_IP/24
+										TCP SYN Ping Scan 	sudo nmap -PS22,80,443 -sn MACHINE_IP/30
+										TCP ACK Ping Scan 	sudo nmap -PA22,80,443 -sn MACHINE_IP/30
+										UDP Ping Scan 	sudo nmap -PU53,161,162 -sn MACHINE_IP/30		
+										-n 	no DNS lookup
+										-R 	reverse-DNS lookup for all hosts
+										-sn 	host discovery only					
+
+
+
+
+								/\/\/\/\/\/\/\/\/ NMAP PORT STATES \/\/\/\/\/\/\/\/\/
+								
+    Open: indicates that a service is listening on the specified port.
+    
+	Closed: indicates that no service is listening on the specified port, although the port is accessible. 
+	By accessible, we mean that it is reachable and is not blocked by a firewall or other security appliances/programs.
+    
+	Filtered: means that Nmap cannot determine if the port is open or closed because the port is not accessible.
+	This state is usually due to a firewall preventing Nmap from reaching that port. Nmap’s packets may be blocked from reaching the port; alternatively, 
+	the responses are blocked from reaching Nmap’s host.
+    
+	Unfiltered: means that Nmap cannot determine if the port is open or closed, although the port is accessible. 
+	This state is encountered when using an ACK scan -sA.
+    
+	Open|Filtered: This means that Nmap cannot determine whether the port is open or filtered.
+    
+	Closed|Filtered: This means that Nmap cannot decide whether a port is closed or filtered.
+	
+	
+	
+	
+	How does TCP scan works?
+	
+	At first, 
+	
+	1. The client sends a TCP packet with a SYN flag.
+	2. Then the server responds with a SYN/ACK Flag.
+	3. if the port is open; finally, the client completes the 3-way handshake by sending an ACK.
+	
+	NMAP command for TCP scan = -sT ( This will perform a TCP scan )
+	
+	NMAP -F ( Makes the scan faster by sending less number of packets )
+	
+	-r ( sorts the nmap ports order )
+	
+	How Does a SYN scan works?
+	1. the client sends a SYN packet
+	2. The server responds with a SYN/ACK Flag
+	3. Then the server responds RST FLAG
+	
+	
+	How does a UDP scan works?
+	
+	In this particular scan type there are no flags sent in packets 
+	instead, The client sends a UDP packet ( if the port is open no response is expected ) 
+	( IF THE PORT IS CLOSE THE SERVER REPSONDS WITH A ICMP PACKER ERROR TYPE 3 )
+	
+	
+	BASIC NMAP STRUCTURE 
+	
+    port list: -p22,80,443 will scan ports 22, 80 and 443.
+    port range: -p1-1023 will scan all ports between 1 and 1023 inclusive, while -p20-25 will scan ports between 20 and 25 inclusive.
+
+
+	--top-ports 10 - ( IT WILL SCAN FOR TOP 10 COMMON PORTS)
+	To control the timing of NMAP scans This flag is used 
+	-T0, -T1, -T3, -T4, -T5, -T6 
+	--min-rate <number> ( NUMBER OF PACKETS SENT IN A SECOND ) 
+	
+	
+						/\/\/\/\/\/\/\/\/\/\/\/\/\  NMAP ALL SCANS SYNTAX  /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+						
+										Port Scan Type 	Example Command
+										TCP Connect Scan 	nmap -sT 10.10.76.108
+										TCP SYN Scan 	sudo nmap -sS 10.10.76.108
+										UDP Scan 	sudo nmap -sU 10.10.76.108
+										
+										These scan types should get you started discovering running TCP and UDP services on a target host.
+										Option 	Purpose
+										-p- 	all ports
+										-p1-1023 	scan ports 1 to 1023
+										-F 	100 most common ports
+										-r 	scan ports in consecutive order
+										-T<0-5> 	-T0 being the slowest and T5 the fastest
+										--max-rate 50 	rate <= 50 packets/sec
+										--min-rate 15 	rate >= 15 packets/sec
+										--min-parallelism 100 	at least 100 probes in parallel
+										
+										
+										
+How does a NULL Scan works?
+1. Client sends a NULL with no flags and bit set to zero 
+2. IF the server does not responds with any packets (then the port is open or filtered)
+3. But if the server responds with a RST/ACK then the port is closed.
+
+How does a FIN Scan works?
+1. Client sends a FIN packet 
+2. If the server doesn't responds with anything ( then the port is open  or filtered Similiarly happens with the NULL scan )
+3. If it responds with a RST/ACK packet then the port is closed.
+
+How does a XMASS Scan Works?
+The server sends request with FIN,URG,PSH 
+If it doesn't responds then the port is open or filtered.
+otherwise if it responds then the port is closed ( BTW IT WILL RESPOND WITH A SYN/ACK FLAG )
+
+How does a TCP ACK Scan works?
+1. Client sends a ACK PACKET with a ACK flag in it and The server responds with a RST flag. ( regardless of the condition means no matter if the port
+is open or closed the server will respond with a RST flag )
+
+
+How does a WINDOWS TCP SCAN works?
+1. Client sends a ACK flag 
+2. and the server responds with a RST flag ( no matter what the state of the port is )
+
+How does a custom scan works?
+1. If you want to make scan level to the advance level by combining many scan types this type of scan is used.
+--scanflags RSTSYNFIN ( This will send RST FLAG SYN AND FIN FLAG TO THE SERVER ) 
+
+NMAP IP SCAN SPOOFING AND MAC ADDRESS SPOOFING 
+
+-e ( For specifying the interface )
+-Pn ( For skipping PING SCAN ) 
+--spoof-mac SPOOFED_MAC ( It will spoof the mac address )
+-S ( it will spoof the IP Address )
+-D ( TO perform the same scan from many IP ADDRESSES ) 
+ME ( NOT A FLAG BUT USED IN DECOY SCAN -D TO STATE THAT IT's YOUR IP ADDRESS ) 
+
+
+What is A firewall?
+A firewall is a piece of software or hardware that blocks request fro a particular source or IP ADDRESS or A particular header 
+
+What is IDS?
+IDS ( INTRUSION DETECTION SYSTEM ) detects a maclious request with the help of the packets sent if the request of the packets increases it creates
+an alert. ( HOW TO PREVENT IDS TO DETECT OUR NMAP SCAN ) 
+
+Fragmented Packets 
+If the IDS is stopping our scan from being run then Fragmented comes handy in place. 
+-f ( TO Divide the packets in to 8 bytes ) 
+-f -f ( 16 bytes Which is similar to -ff ) TO change deault default 8 byte use this command --mtu
+
+--reason ( show why nmap performed this type of scan ) 
+-v ( verbosity level ( INFORMATION LEVEL ) )  ( -vv ( MORE VERBOSITY ) )
+-d ( debbuging details ) -dd ( more details )
+
+
+									/\/\/\/\//\/\/\/\/\/\/\/\/\		NMAP DETECTION COMMANDs 	/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+										--version-intensity LEVEL ( 1-9 ) 
+										-sV --version-light - Has the intensity of level 2 
+										-sV --version-all  - Has the complete intensity 
+										-O ( capital O ) - To detect the version 
+										
+										
+
+									/\/\/\/\/\/\/\/\/\/\/\/\/\/		NMAP SCRIPTS 	//\/\/\/\/\/\/\/\/\//\/\/\/\/
+									
+									
+													--script=default = -sC 
+													auth 	Authentication related scripts
+													broadcast 	Discover hosts by sending broadcast messages
+													brute 	Performs brute-force password auditing against logins
+													default 	Default scripts, same as -sC
+													discovery 	Retrieve accessible information, such as database tables and DNS names	
+													dos 	Detects servers vulnerable to Denial of Service (DoS)
+													exploit 	Attempts to exploit various vulnerable services
+													external 	Checks using a third-party service, such as Geoplugin and Virustotal
+													fuzzer 	Launch fuzzing attacks
+													intrusive 	Intrusive scripts such as brute-force attacks and exploitation
+													malware 	Scans for backdoors
+													safe 	Safe scripts that won’t crash the target
+													version 	Retrieve service versions
+													vuln 	Checks for vulnerabilities or exploit vulnerable services
+													
+													
+													
+													
+									\/\/\/\/\/\/\/\/\/\/\/\/\/ NMAP OUTPUTS \/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+									
+															-oN = NORMAL OUTPUT 
+															-oG = grepable OUTPUT ( line by line ) 
+															-oX = For XML 
+															-oA = In all three formats that are XML,GREPABLE,NORMAL 
+															
+															
+															
+															
+															
+									\/\\/\/\/\/\/\/\/\/\/\/\/\/\/\/\	PROTOCOLS	 \/\/\/\\/\/\/\/\/\/\/\/\//\
+													
+															FTP 	21 	File Transfer 	Cleartext
+															HTTP 	80 	Worldwide Web 	Cleartext
+															IMAP 	143 	Email (MDA) 	Cleartext
+															POP3 	110 	Email (MDA) 	Cleartext
+															SMTP 	25 	Email (MTA) 	Cleartext
+															Telnet 	23 	Remote Access 	Cleartext
+													
+													
+													
+													
+													
+											\/\/\/\/\/\ THC HYDRA COMMANDS \/\/\/\/\/\/\/\/		
+													
+												Protocol 	TCP Port 	Application(s) 	Data Security
+												FTP 	21 	File Transfer 	Cleartext
+												FTPS 	990 	File Transfer 	Encrypted
+												HTTP 	80 	Worldwide Web 	Cleartext
+												HTTPS 	443 	Worldwide Web 	Encrypted
+												IMAP 	143 	Email (MDA) 	Cleartext
+												IMAPS 	993 	Email (MDA) 	Encrypted
+												POP3 	110 	Email (MDA) 	Cleartext
+												POP3S 	995 	Email (MDA) 	Encrypted
+												SFTP 	22 	File Transfer 	Encrypted
+												SSH 	22 	Remote Access and File Transfer 	Encrypted
+												SMTP 	25 	Email (MTA) 	Cleartext
+												SMTPS 	465 	Email (MTA) 	Encrypted
+												Telnet 	23 	Remote Access 	Cleartext
+												
+												Hydra remains a very efficient tool that you can launch from the terminal to try the different 
+												passwords. We summarize its main options in the following table.
+												Option 	Explanation
+												-l username 	Provide the login name
+												-P WordList.txt 	Specify the password list to use
+												server service 	Set the server address and service to attack
+												-s PORT 	Use in case of non-default service port number
+												-V or -vV 	Show the username and password combinations being tried
+												-d 	Display debugging output if the verbose output is not helping
